@@ -185,15 +185,18 @@ function atomicFishing() {
 		}
 		
 		// Print the score!
+		//context.beginPath();
+		//context.font('Italic 30px Sans-Serif');
 		context.fillText( data.atomScore, 20, HEIGHT-20 );
+		//context.closePath();
 	}
 
 	function drawDepot() {
 		context.beginPath();
 		context.moveTo(data.depot.x, data.depot.y);
 		context.lineTo(data.depot.x, data.depot.y + data.depot.height);
-		context.lineTo(data.depot.x + data.depot.width, data.depot.y
-				+ data.depot.height);
+		context.lineTo( data.depot.x + data.depot.width, 
+						data.depot.y + data.depot.height);
 		context.lineTo(data.depot.x + data.depot.width, data.depot.y);
 		context.lineTo(data.depot.x, data.depot.y);
 		context.stroke();
