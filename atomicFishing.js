@@ -11,6 +11,7 @@ function atomicFishing() {
 	var objectiveList = [	"H2O", "H H O", "H2O.png", 
 							"CH4", "H H H H C", "CH4.png",
 							"C4H5N", "C C C C H H H H H N", "C4H5N.png"];
+	var atomListNumber = [ 1, 2, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 20]
 	
 	var molecules = [];
 
@@ -28,9 +29,9 @@ function atomicFishing() {
 	// 'Object' that holds the data in the game
 	function Data() {
 		//this.collection = new Array[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-		this.atoms = [ new Atom( atomListName[2], WIDTH / 2, -20, (atomListMass[2]/3+15) ) ]; //name,x,y,radius create array with
+		this.atoms = [ new Atom( atomListName[2], WIDTH / 2, -20, (atomListMass[2]/3+15), 6 ) ]; //name,x,y,radius create array with
 															// atoms (starts with one atom in it)
-		this.atomChain = [ new Atom(" ", WIDTH / 2, 200, 10) ]; // collected chain starting 
+		this.atomChain = [ new Atom(" ", WIDTH / 2, 200, 10, 2) ]; // collected chain starting 
 															// with a collector
 		this.atomTube = new Area(WIDTH/4, 0, 400, HEIGHT); 		// Tube where the atoms is 'raining'
 		this.depot = new Area(600, 0, 120, 200);
@@ -113,16 +114,35 @@ function atomicFishing() {
 	} // end drawBackground()
 
 	// 'Object' that defines an Atom
-	function Atom(type, x, y, radius) {
+	function Atom(type, x, y, radius, atomNumber) {
 		this.name = type; // name of atom (abbreviation)
 		this.x = x; // position x in space
 		this.y = y; // position y in space
 		this.radius = radius; // radius in pixels
 		this.timeCreated = new Date().getTime(); // When this atom was
 													// 'created'
-		this.color = 'rgb(' + Math.floor(radius * 9) + ', '
+		/*this.color = 'rgb(' + Math.floor(radius * 9) + ', '
 							+ Math.floor(255 - (radius * 9)) + ', '
-							+ Math.floor((255 * (radius)) % 255) + ')';
+							+ Math.floor((255 * (radius)) % 255) + ')';*/
+		
+		var colors = new Array(220, 220, 220,
+				255, 0, 0,
+				255, 128, 0,
+				255, 255, 0,
+				0, 255, 0,
+				0, 255, 255,
+				0, 0, 255,
+				200, 0, 200);
+	
+	var electronsNeeded;
+	if (atomNumber<= 2) electronsNeeded = 2 - atomNumber;
+	else electronsNeeded = (atomNumber - 2)%8;
+	
+	this.color = 'rgb(' + colors[electronsNeeded*3] + ', '
+	+ colors[electronsNeeded*3+1] + ', '
+	+ colors[electronsNeeded*3+2] + ')';
+		
+		
 		this.velX = 0; 										// velocity sideways (magnetics)
 		this.velY = 3; 										// velocity downwards (gravity)
 		this.falling = true; // Whether the atom is falling or not
@@ -415,13 +435,15 @@ function atomicFishing() {
 			var atomIndex = Math.floor( (Math.random() * atomListName.length) );
 			atomName = atomListName[atomIndex];				// name: like C (carbon), H (hydrogen)
 			atomMass = atomListMass[atomIndex] / 3 + 15;	// equivalent to radius
+			atomNumber = atomListNumber[atomIndex];
 			atomX = data.atomTube.x	+ atomMass 
 						+ Math.floor( Math.random() * (data.atomTube.width - 2 * atomMass) );
 			data.atoms[data.atoms.length] = new Atom( 		// create another atom!
 													atomName,
 													atomX, 
 													-atomMass,	// - radius as y (spawn right before atomTube)
-													atomMass);	// radius
+													atomMass, 
+													atomNumber);	// radius
 		}
 	} // end atomSpawn()
 
