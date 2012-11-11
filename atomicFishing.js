@@ -22,8 +22,11 @@ function atomicFishing() {
 	// For each 50 ms, start up gameLoop (if finished from last time)
 	setInterval(function() { gameLoop(); }, 50);
 	
+	// add eventListener to listen for keys pressed down
+	document.addEventListener("keydown", startGame, false);
 	// Watch for mouse movement to move chain / control game
-	canvas.addEventListener("mousemove", moveChain, false);
+	//canvas.addEventListener("mousemove", moveChain, false);
+	//canvas.removeEventListener("mousemove", moveChain, false);
 	
 
 	// 'Object' that holds the data in the game
@@ -35,7 +38,7 @@ function atomicFishing() {
 															// with a collector
 		this.atomTube = new Area(WIDTH/4, 0, 400, HEIGHT); 		// Tube where the atoms is 'raining'
 		this.depot = new Area(600, 0, 120, 200);
-		this.running = true; 								// Game running?
+		this.running = false; 								// Game running?
 		this.directChain = false; 							// Chain being controlled?
 		this.atomMaxRadius = 20;							// maximum radius in an atom
 		this.lazerOffsetBottom = 40; 						// distance between bottom and the lazer
@@ -75,7 +78,6 @@ function atomicFishing() {
 					return (1 + i + data.atomChain.length);
 			}
 		}
-
 		return 0;
 	} // end getDistance(..)
 
@@ -278,7 +280,32 @@ function atomicFishing() {
 			update();
 			render();
 		}
+		else if( data.atoms.length <= 1 )	// game not running and none atoms spawned
+		{									//	means we are on START OF GAME
+		
+		}
+		else								// game not running and several atoms has
+		{									// spawned means we're at END OF GAME
+		}
 	} // end gameLoop()
+	
+	function startGame(e)
+	{
+		var keynum;								// to hold ascii-value of key pressed
+		if(window.event) { // (IE)
+			keynum = e.keyCode;
+		}
+		else if(e.which) { // (other browsers)
+			keynum = e.which;
+		}
+
+		if(keynum == 13)						// if 'enter' is pressed:
+		{										// remove and add eventlistener and start game
+			document.removeEventListener("keydown", startGame, false);
+			canvas.addEventListener("mousemove", moveChain, false);
+			data.running = true;
+		}
+	} // end startGame(...)
 
 	// Update data according to last screen
 	function update() {
@@ -318,7 +345,8 @@ function atomicFishing() {
 				
 				var distance = getDistance(data.atoms[i], data.atomChain[data.atomChain.length - 1]);
 				var limit = data.atoms[i].radius + data.atomChain[data.atomChain.length - 1].radius;
-				if ( distance <= limit && !insideDepot( data.atomChain[0] ) )				
+				if ( 	distance <= limit && 
+						!( insideDepot( data.atomChain[0] ) && data.validAnswer) )
 				{
 					looseAtom = data.atoms.splice(i, 1);
 					data.atomChain.push( looseAtom[0] );
@@ -377,30 +405,33 @@ function atomicFishing() {
 						data.atoms.push( releaseAtom[0] );
 					}
 				} // end if
-			} // end for
+			} // end if atom below lazer
 			
+			// If atom is inside the depot (wall not hindering from getting there => validAnswer=true )
 			if( insideDepot( atom ) )
-			{
-				if( atom.x > (data.depot.x + (data.depot.width * 0.3) ) )
+			{																	// if inside depot
+				if( atom.x > (data.depot.x + (data.depot.width * 0.3) ) )		// in the right place ( 3/5 to middle )
 				{
 					var fulfilledAtom = data.atomChain.splice(g,1);				// Extract an atom from the finished molecule
 					data.atomScore += Math.floor( fulfilledAtom[0].radius );	// Update the score by the mass / value of the atom
 				}
 			}
+			
 			atomTubeMinLimitX = data.atomTube.x + atom.radius;
 			if ( atom.x < atomTubeMinLimitX ) {
 				atom.x = atomTubeMinLimitX+2;
 				atom.velX = -(atom.velX * 0.5);
 			}
 			
-			if(!data.validAnswer){
+			if( !data.validAnswer ){
 				atomTubeMaxLimitX = data.atomTube.x + data.atomTube.width - atom.radius;
 				if (atom.x > atomTubeMaxLimitX) {
 					atom.x = atomTubeMaxLimitX;
 					atom.velX = -(atom.velX * 0.5);
 				}
-			} else
-				{
+			} 
+			else
+			{
 				if (atom.x > atomTubeMaxLimitX&&atom.y+atom.radius>200&&atom.x-400<atom.y) {
 					atom.x = atomTubeMaxLimitX+2;
 					atom.velX = -(atom.velX * 0.5);
