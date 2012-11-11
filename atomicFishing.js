@@ -145,7 +145,6 @@ function atomicFishing() {
 		
 		this.velX = 0; 										// velocity sideways (magnetics)
 		this.velY = 3; 										// velocity downwards (gravity)
-		this.falling = true; // Whether the atom is falling or not
 	} // end Atom()
 	
 	// 'Object' that defines an objective - a goal for the player - a molecule
@@ -199,9 +198,12 @@ function atomicFishing() {
 		if( data.validAnswer ) drawDepot();
 		
 		// Draw molecules (tasks - picture at right side of atomTube)
-		for( i = 0; i < molecules.length; i++ )
+		for( i = 0; i < 3; i++ )
 		{
-			drawMolecule( molecules[i], i );
+			if( molecules.length > i )				// draw molecule if it exists
+			{
+				drawMolecule( molecules[i], i );
+			}
 		}
 		
 		// Print the score!
@@ -316,7 +318,7 @@ function atomicFishing() {
 				
 				var distance = getDistance(data.atoms[i], data.atomChain[data.atomChain.length - 1]);
 				var limit = data.atoms[i].radius + data.atomChain[data.atomChain.length - 1].radius;
-				if ( distance <= limit )				
+				if ( distance <= limit && !insideDepot( data.atomChain[0] ) )				
 				{
 					looseAtom = data.atoms.splice(i, 1);
 					data.atomChain.push( looseAtom[0] );
@@ -469,6 +471,7 @@ function atomicFishing() {
 			if( solution.toString() == answer.toString() ) {			// problem: molecules[i].combination is a string, not an array
 				//alert( "congrats!" );
 				data.validAnswer = true;
+				
 			}
 		} // end for( each molecule )
 		//alert( answer );
