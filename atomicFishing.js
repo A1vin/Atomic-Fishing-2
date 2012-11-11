@@ -365,6 +365,11 @@ function atomicFishing() {
 					data.atomScore += Math.floor( fulfilledAtom[0].radius );	// Update the score by the mass / value of the atom
 				}
 			}
+			atomTubeMinLimitX = data.atomTube.x + atom.radius;
+			if ( atom.x < atomTubeMinLimitX ) {
+				atom.x = atomTubeMinLimitX+2;
+				atom.velX = -(atom.velX * 0.5);
+			}
 			
 			if(!data.validAnswer){
 				atomTubeMaxLimitX = data.atomTube.x + data.atomTube.width - atom.radius;
