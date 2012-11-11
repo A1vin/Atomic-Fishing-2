@@ -363,6 +363,27 @@ function atomicFishing() {
 				}
 			}
 			
+			if(!data.validAnswer){
+				atomTubeMaxLimitX = data.atomTube.x + data.atomTube.width - atom.radius;
+				if (atom.x > atomTubeMaxLimitX) {
+					atom.x = atomTubeMaxLimitX;
+					atom.velX = -(atom.velX * 0.5);
+				}
+			} else
+				{
+				if (atom.x > atomTubeMaxLimitX&&atom.y+atom.radius>200&&atom.x-400<atom.y) {
+					atom.x = atomTubeMaxLimitX+2;
+					atom.velX = -(atom.velX * 0.5);
+				}
+				if (atom.x > atomTubeMaxLimitX&&atom.y+atom.radius>200&&atom.x-400>atom.y) {
+					atom.y = 199-atom.radius;
+					atom.velY = -(atom.velY * 0.5);
+				}
+				if ( atom.x > atomTubeMaxLimitX+120 ) {
+					atom.x = atomTubeMaxLimitX+118;
+					atom.velX = -(atom.velX * 0.5);
+				}
+			}
 		} // end for( each atom )
 	} // end updateAtomChain()
 		
